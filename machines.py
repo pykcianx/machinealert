@@ -4,8 +4,10 @@ from testform import Ui_MainWindow
 from registry import Ui_Form2
 import pandas as pd
 import sqlite3
-from PyQt5.QtCore import QTimer
+import time
+import threading
 conn = sqlite3.connect('machinealert.db')
+
 
 
 class move(QtWidgets.QWidget):
@@ -236,11 +238,15 @@ class Ui_Form(object):
         self.ui2 = Ui_Form2()
         self.ui2.regUi(self.window2)
         self.window2.show()
-        
     
+    def change_label(self):
+        time.sleep(5)
+        self.warnlbl.setText('')
+ 
     def login(self):
         user = self.lineEdit.text()
         user_pass = self.lineEdit_2.text()  
+        x = threading.Thread(target=self.change_label)
 
         try:
             c = conn.cursor()
@@ -259,6 +265,7 @@ class Ui_Form(object):
 
             else:
                 self.warnlbl.setText('Nieprawidłowe dane logowania!')
+                x.start()
 
         except sqlite3.IntegrityError:
             self.warnlbl.setText('Podany użytkownik nie istnieje')
